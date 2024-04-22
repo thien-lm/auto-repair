@@ -1,0 +1,6 @@
+explains event handler in informer when creating new node: https://sl.bing.net/cqLBJArrM1k
+to run createClient in CreateClient file, need to create config struct and assign to variable first, then run createClient function inside
+ssh with public key:
+    1. find your public key cat ~/.ssh/id_rsa.pub
+    2. add that public key to your server in file nano ~/.ssh/authorized_keys
+    3. done !

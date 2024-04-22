@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: secret-controller
+  name: secret-controller
+  namespace: secret-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: secret-controller
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: secret-controller
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - image: registry.fke.fptcloud.com/762c8029-26d9-4bea-b461-989ee4d4890f/secret-controller:v0.1.0
+        name: secret-controller
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+      serviceAccountName: secret-controller
