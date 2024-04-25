@@ -8,6 +8,8 @@ value inside "()" below can be customize simply
 <br/>
     2.1 trying to reboot node (n time)
     <br/>
+    After rebooting, continously check if  node in k8s cluster in "ready" state for maximum 10 mintues (recheck node status after 10 sec)
+    <br/>
     2.2 trying to replace - scale up and scale down node:
     <ul>
     <li>
@@ -20,3 +22,5 @@ value inside "()" below can be customize simply
         2.2.2 if number of node is equal or more than max auto scaler size remove node then create new node 
     </li>
     </ul>
+    <br/>
+    After replacing, continously check if all nodes in k8s cluster in "ready" state for maximum 10 mintues (recheck node status after 10 sec)
