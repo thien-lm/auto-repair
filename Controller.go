@@ -272,7 +272,7 @@ func (c *controller) checkNodeReadyStatusAfterRepairing(node *corev1.Node) bool 
             	return true
 			}
 	}
-	logger.Info("can not determine if node is healthy, retry after 3 seconds")
+	logger.Info("can not determine if node is healthy, retry after 10 seconds")
 	time.Sleep(retryDuration)
 	}
 	return false
@@ -294,7 +294,7 @@ func (c *controller) checkAllNodesReadyStatus() bool {
 			}
 		}
 		}
-	logger.Info("can not determine if all nodes is healthy, retry after 3 seconds")
+	logger.Info("can not determine if all nodes is healthy, retry after 10 seconds")
 	time.Sleep(retryDuration)
 	}
 	return false
