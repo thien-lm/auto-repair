@@ -27,7 +27,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
+	corev1 "k8s.io/api/core/v1"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zapr"
 	"go.uber.org/zap"
@@ -459,4 +459,41 @@ func logger() logr.Logger {
 	// Wrap the Zap logger with logr
 	log := zapr.NewLogger(logger)
 	return log
+}
+
+func isNodeStatusChanged(oldNode *corev1.Node, newNode *corev1.Node) bool {
+	logger := logger()
+	if oldNode.Status.Conditions != nil && newNode.Status.Conditions != nil {
+		// Check if NodeReady status is the same in old and new objects
+		if len(oldNode.Status.Conditions) > 0 && len(newNode.Status.Conditions) > 0 {
+			oldReadyStatus := getNodeConditionStatus(oldNode.Status.Conditions, corev1.NodeReady)
+			newReadyStatus := getNodeConditionStatus(newNode.Status.Conditions, corev1.NodeReady)
+			if oldReadyStatus == newReadyStatus || newReadyStatus == corev1.ConditionTrue{
+				logger.Info("node status not changed")
+				return false
+			}
+		}
+	}
+	logger.Info("node status changed")
+	return true
+}
+
+func (c *controller) showWorkQueue() {
+	fmt.Println("Current elements in the workqueue:")
+	items := c.queue.Len()
+	for i := 0; i < items; i++ {
+		item, _ := c.queue.Get()
+		fmt.Println(item)
+		c.queue.AddRateLimited(item)
+	}
+}
+
+
+func getNodeConditionStatus(conditions []corev1.NodeCondition, conditionType corev1.NodeConditionType) corev1.ConditionStatus {
+	for _, condition := range conditions {
+		if condition.Type == conditionType {
+			return condition.Status
+		}
+	}
+	return corev1.ConditionUnknown
 }

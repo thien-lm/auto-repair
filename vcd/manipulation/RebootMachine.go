@@ -15,7 +15,8 @@ func RebootVM(client *govcd.VCDClient, org string, vdc string, vmName string) er
 		fmt.Printf("Error retrieving vm: %v\n", err)
 		return errors.New("error retrieving vm")
 	}
-	
+	status, _ := vm.GetStatus()
+	if status == "POWERED_ON" {
 	// Send a poweroff request  VM
 	taskpof, err := vm.PowerOff()
 	if err != nil {
@@ -39,12 +40,22 @@ func RebootVM(client *govcd.VCDClient, org string, vdc string, vmName string) er
 		fmt.Printf("task power on %v failed", taskpon)
 		return errors.New("error powerOff vm")
 	}
+} else if status == "POWERED_OFF" {
+		taskpon, err := vm.PowerOn()
+	if err != nil {
+		fmt.Printf("Error powerOn VM: %v\n with task %v" , err, taskpon)
+		return errors.New("error powerOn vm")
 
-	fmt.Printf("reboot successfully")
+	}
+	err = taskpon.WaitTaskCompletion()
+	if err != nil {
+		fmt.Printf("task power on %v failed", taskpon)
+		return errors.New("error powerOff vm")
+	}
+} else {
+	return errors.New("unknown status of vm")
+}
+
 	
 	return nil
 }
-
-// func GetVMIDByVMName(client *govcd.Client, org string, vdc string, vmName string) {
-// 	client.
-// }

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"time"
+	//"time"
 
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
@@ -12,7 +13,7 @@ import (
 
 func main() {
 	logger := logger()
-	kubeconfig := flag.String("kubeconfig", "/home/a-xplat/.kube/kubeconfig", "location to your kubeconfig file")
+	kubeconfig := flag.String("kubeconfig", "/home/thien/Desktop/tailieutoanhoc/be/dpqibt3c-kubeconfig", "location to your kubeconfig file")
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
 		logger.Info("unable to build config from flags")
@@ -27,7 +28,7 @@ func main() {
 	}
 
 	ch := make(chan struct{})
-	informers := informers.NewSharedInformerFactory(clientset, 6*time.Second)
+	informers := informers.NewSharedInformerFactory(clientset, 10*time.Second)
 	c := newController(clientset,  informers.Core().V1().Nodes())
 	informers.Start(ch)
 	c.run(ch)

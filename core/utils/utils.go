@@ -408,7 +408,7 @@ func CheckStatusCluster(domainAPI string, vpcID string, accessToken string, clus
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println("status cluster is:", resp)
+	log.Println(resp)
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalln(err)

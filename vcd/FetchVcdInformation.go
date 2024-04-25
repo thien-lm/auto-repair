@@ -16,8 +16,7 @@ func GetVDC(kubeclient kubernetes.Interface) string {
 		fmt.Println("cannot get information from fptcloud csi configmap")
 		klog.Fatalf("Failed to get information of fptcloud csi configmap: %v", err)
 	}
-	host, org, vdc := getHostOrgVDCFromConfigMap(configmaps.Data["vcloud-csi-config.yaml"])
-	fmt.Printf("%s-%s-%s", host, org, vdc)
+	_, _, vdc := getHostOrgVDCFromConfigMap(configmaps.Data["vcloud-csi-config.yaml"])
 	VDC = vdc
 	return VDC
 }
@@ -31,8 +30,7 @@ func GetORG(kubeclient kubernetes.Interface) string {
 	}
 
 	//fmt.Printf("xnxx %v", reflect.TypeOf(configmaps.Data["vcloud-csi-config.yaml"]))
-	host, org, vdc := getHostOrgVDCFromConfigMap(configmaps.Data["vcloud-csi-config.yaml"])
-	fmt.Printf("%s-%s-%s", host, org, vdc)
+	_, org, _ := getHostOrgVDCFromConfigMap(configmaps.Data["vcloud-csi-config.yaml"])
 	ORG = org
 	return ORG
 }
@@ -44,8 +42,7 @@ func GetHost(kubeclient kubernetes.Interface) string {
 		fmt.Println("cannot get information from fptcloud csi configmap")
 		klog.Fatalf("Failed to get information of fptcloud csi configmap: %v", err)
 	}
-	host, org, vdc := getHostOrgVDCFromConfigMap(configmaps.Data["vcloud-csi-config.yaml"])
-	fmt.Printf("%s-%s-%s", host, org, vdc)
+	host, _, _ := getHostOrgVDCFromConfigMap(configmaps.Data["vcloud-csi-config.yaml"])
 	hosts = host
 	return hosts
 }

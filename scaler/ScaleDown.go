@@ -201,40 +201,31 @@ func ScaleDown(currentTime time.Time, kubeclient kube_client.Interface,
 	// 	}
 	// }
 	
-	if !checkWorkerNodeCanBeScaleDown(kubeclient, workerNameToRemove) {
+	if !CheckWorkerNodeCanBeScaleDown(kubeclient, workerNameToRemove) {
 		klog.V(1).Infof("Cannot perform scale down action")
 		scaleDownStatus.Result = status.ScaleDownNoUnneeded
 		return scaleDownStatus, nil
 	}
 	klog.V(1).Infof("Scaling down node %s", workerNameToRemove)
-	if !checkWorkerNodeCanBeScaleDown(kubeclient, workerNameToRemove) {
-		klog.V(1).Infof("Cannot perform scale down action")
-		scaleDownStatus.Result = status.ScaleDownNoUnneeded
-		return scaleDownStatus, nil
-	}
 
 	domainAPI := utils.GetDomainApiConformEnv(callbackURL)
 	workerNodeNameList := make([]string, 0)
-	// workerNodeNameList = append(workerNodeNameList, nodesToRemove[0].Node.Name) //draft
+	workerNodeNameList = append(workerNodeNameList, workerNameToRemove) //draft
 
 	if utils.CheckStatusCluster(domainAPI, vpcID, accessToken, clusterIDPortal) {
 		//cordonWorkerNodeAndDeletePod(kubeclient, workerNameToRemove)
-		fmt.Printf("cluster status is OK, removing %s", workerNameToRemove)
 
 		utils.PerformScaleDown(domainAPI, vpcID, accessToken, idCluster, clusterIDPortal, workerNodeNameList) // draft
 		for {
-			fmt.Printf("Performing scaledown, removing %s", workerNameToRemove)
 			var count int = 0
 			time.Sleep(30 * time.Second)
 			isSucceededStatus := utils.CheckStatusCluster(domainAPI, vpcID, accessToken, clusterIDPortal)
 			//fmt.Println("status of cluster is SCALING")
 			klog.V(1).Infof("Status of cluster is SCALING")
 			count = count + 1
-			fmt.Println("debugging scale down in checking scaledown: status SCALING")
 			if isSucceededStatus {
 				//fmt.Println("status of cluster is SUCCEEDED")
 				klog.V(1).Infof("Status of cluster is SUCCEEDED")
-				fmt.Println("debugging scale down in checking scaledown: status SUCCESS")
 				break
 			}
 			if count > 100 {
@@ -386,7 +377,7 @@ func cordonWorkerNodeAndDeletePod(kubeclient kube_client.Interface, workerName s
 	}
 }
 
-func checkWorkerNodeCanBeScaleDown(kubeclient kube_client.Interface, workerNodeName string) bool {
+func CheckWorkerNodeCanBeScaleDown(kubeclient kube_client.Interface, workerNodeName string) bool {
 	var canBeRemove bool = true
 	pods, err := kubeclient.CoreV1().Pods("").List(ctx.Background(), metav1.ListOptions{})
 	if err != nil {
@@ -403,16 +394,22 @@ func checkWorkerNodeCanBeScaleDown(kubeclient kube_client.Interface, workerNodeN
 				klog.V(1).Infof("If you want to scale down, you should evict pod %s in namespace %s "+
 					"because your replicaset %s has only one replica", pod.Name, pod.Namespace,
 					replicaset.Name)
+					fmt.Printf("If you want to scale down, you should evict pod %s in namespace %s "+
+					"because your replicaset %s has only one replica", pod.Name, pod.Namespace,
+					replicaset.Name)	
 				canBeRemove = false
 			}
 			for _, volume := range pod.Spec.Volumes {
 				if volume.EmptyDir != nil {
 					klog.V(1).Infof("If you want to scale down, you should evict pod %s"+
 						" in namespace %s because pod has local storage", pod.Name, pod.Namespace)
+					fmt.Printf("If you want to scale down, you should evict pod %s"+
+						" in namespace %s because pod has local storage", pod.Name, pod.Namespace)	
 					canBeRemove = false
 				}
 			}
 		}
 	}
+	fmt.Printf("can be remove: %v /n", canBeRemove)
 	return canBeRemove
 }
