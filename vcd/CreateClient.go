@@ -14,14 +14,6 @@ type Config struct {
     VDC      string
     Insecure bool
 }
-//Example config
-// User:     "xplat-demo_kixhhgke@fptcloud.com",
-// Password: "7U603!,xbq{K{YcW",
-// Org:      "XPLAT-DEMO-SGN10-ORG",
-// Href:     "https://sgn10.fptcloud.com/api",
-// VDC:      "XPLAT-DEMO-SGN10-VPC",
-// Insecure: true,
-//
 
 func (c *Config) NewClient() (*govcd.VCDClient, error) {
     u, err := url.ParseRequestURI(c.Href)
