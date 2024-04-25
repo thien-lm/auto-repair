@@ -152,13 +152,15 @@ func (c *controller) handleNotReadyNode(node *corev1.Node) error {
 		}
 	}
 	//trying to replace node
-	logger.Info("trying to replace node: ", "node", node.Name)
-	c.replaceNode(c.clientset, node)
-	isNodeReady := c.checkAllNodesReadyStatus()
-	if isNodeReady {
-		logger.Info("replace node perform by auto repair controller was ran successfully")
-		delete(c.enqueueMap,node.Name) //only mark that node can be re-process (repair again) if the auto scaler success to process it before
-		return nil
+	for i:= 0; i < maxReplaceNodeRetry; i++ {
+		logger.Info("trying to replace node ","node", node.Name, "total times: ", i + 1)
+		c.replaceNode(c.clientset, node)
+		isNodeReady := c.checkAllNodesReadyStatus()
+		if isNodeReady {
+			logger.Info("replace node perform by auto repair controller was ran successfully")
+			delete(c.enqueueMap,node.Name) //only mark that node can be re-process (repair again) if the auto scaler success to process it before
+			return nil
+		}
 	}
 	return errors.New("max retries reached, can not check if node is ready")
 }
@@ -255,6 +257,7 @@ func isNodeNotReadyForTooLong(node *corev1.Node) bool {
     return false
 }
 //check status of rebooted node in cluster 
+//this method trying to fetch node status from Kube API server each 10s
 func (c *controller) checkNodeReadyStatusAfterRepairing(node *corev1.Node) bool {
 	logger := logger()
 	logger.Info("Rebooted node in infrastructure, waiting for Ready state in kubernetes")
@@ -275,6 +278,7 @@ func (c *controller) checkNodeReadyStatusAfterRepairing(node *corev1.Node) bool 
 	return false
 }
 //check status of all nodes in cluster
+//this method trying to fetch all nodes status from Kube API server each 10s
 func (c *controller) checkAllNodesReadyStatus() bool {
 	logger := logger()
 	maxRetry := 10
