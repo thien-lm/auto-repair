@@ -1,5 +1,5 @@
 # Stage 1: Build the Golang binary
-FROM golang:1.21 AS builder
+FROM golang:1.22 AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -18,7 +18,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o secret-controller
 
 # Stage 2: Create the final lightweight image
 FROM scratch
-
 # Copy the binary from the first stage
 COPY --from=builder /app/secret-controller /secret-controller
 

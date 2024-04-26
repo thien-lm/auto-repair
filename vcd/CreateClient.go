@@ -20,7 +20,7 @@ func (c *Config) NewClient() (*govcd.VCDClient, error) {
     if err != nil {
         return nil, fmt.Errorf("unable to pass url: %s", err)
     }
-    vcdclient := govcd.NewVCDClient(*u, c.Insecure)
+    vcdclient := govcd.NewVCDClient(*u, true)
     err = vcdclient.Authenticate(c.User, c.Password, c.Org)
     if err != nil {
         return nil, fmt.Errorf("unable to authenticate: %s", err)

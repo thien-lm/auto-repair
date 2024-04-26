@@ -4,3 +4,7 @@ ssh with public key:
     1. find your public key cat ~/.ssh/id_rsa.pub
     2. add that public key to your server in file nano ~/.ssh/authorized_keys
     3. done !
+
+Run makefile in terminal:
+    - make docker-images
+    - make docker-push

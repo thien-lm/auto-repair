@@ -410,6 +410,6 @@ func CheckWorkerNodeCanBeScaleDown(kubeclient kube_client.Interface, workerNodeN
 			}
 		}
 	}
-	fmt.Printf("can be remove: %v /n", canBeRemove)
+	fmt.Printf("node %v can be remove ?: %v \n", workerNodeName, canBeRemove)
 	return canBeRemove
 }

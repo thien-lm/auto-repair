@@ -1,6 +1,6 @@
 REGISTRY                    := registry.fke.fptcloud.com
-IMAGE_PREFIX                := $(REGISTRY)/762c8029-26d9-4bea-b461-989ee4d4890f
-NAME                        := secret-controller
+IMAGE_PREFIX                := $(REGISTRY)/xplat-fke
+NAME                        := auto-repair-controller
 REPO_ROOT                   := $(shell dirname $(realpath $(lastword ${MAKEFILE_LIST})))
 VERSION                     := $(shell cat "${REPO_ROOT}/VERSION")
 

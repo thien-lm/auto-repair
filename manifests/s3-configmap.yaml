@@ -1,9 +1,0 @@
-apiVersion: v1
-data:
-  bucket: m-fke-stg-cluster-kube-bench
-  endpoint: https://s3-sgn09.fptcloud.com
-  region: us-east-1
-kind: ConfigMap
-metadata:
-  name: kube-bench-s3-configmap
-  namespace: secret-controller

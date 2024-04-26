@@ -2,30 +2,31 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: secret-controller
-  name: secret-controller
-  namespace: secret-controller
+    app: auto-repair-controller
+  name: auto-repair-controller
+  namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: secret-controller
+      app: auto-repair-controller
   strategy: {}
   template:
     metadata:
       labels:
-        app: secret-controller
+        app: auto-repair-controller
     spec:
-      imagePullSecrets:
-      - name: regcred
+      # imagePullSecrets:
+      # - name: regcred
       containers:
-      - image: registry.fke.fptcloud.com/762c8029-26d9-4bea-b461-989ee4d4890f/secret-controller:v0.1.0
-        name: secret-controller
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "50m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m"
-      serviceAccountName: secret-controller
+        - image: registry.fke.fptcloud.com/xplat-fke/auto-repair-controller:v1.0.0
+          name: auto-repair-controller
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+      serviceAccountName: auto-repair-controller
+# Explains

@@ -33,8 +33,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var (
-     maxRebootRetry int = 1
+const (
+     maxRebootRetry int = 3
 	 waitingTimeForNotReady time.Duration = 5*time.Minute
      maxReplaceNodeRetry int = 1
 	 retryDuration time.Duration = 10*time.Second
