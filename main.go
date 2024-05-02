@@ -13,7 +13,7 @@ import (
 
 func main() {
 	logger := logger()
-	kubeconfig := flag.String("kubeconfig", "/home/a-xplat/kubeconfig", "location to your kubeconfig file")
+	kubeconfig := flag.String("kubeconfig", "/home/thien/Desktop/tailieutoanhoc/be/dpqibt3c-kubeconfig", "location to your kubeconfig file")
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
 		logger.Info("unable to build config from flags")

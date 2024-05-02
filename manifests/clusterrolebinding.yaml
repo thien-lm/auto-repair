@@ -9,7 +9,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: auto-repair-controller
-  namespace: auto-repair-controller
+  namespace: kube-system
 
 
 # Explains
