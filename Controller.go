@@ -164,7 +164,7 @@ func (c *controller) handleNotReadyNode(node *corev1.Node) error {
 	}
 	return errors.New("max retries reached, can not check if node is ready")
 }
-//replace node, either create then remove or remove then create
+//replace node, either create first then remove or remove first then create
 func (c *controller) replaceNode(kubeClient kubernetes.Interface, toBeRepairedNode *corev1.Node) error{
 	logger := logger()
 	nodes, err := kubeClient.CoreV1().Nodes().List(goContext.Background(), metav1.ListOptions{})
@@ -234,14 +234,22 @@ func (c *controller) handleError() {
 }
 //handle event each time node resource update
 func (c *controller) handleUpdate(oldObj, obj interface{}) {
-	newNode := obj.(*corev1.Node)
-	if isNodeNotReadyForTooLong(newNode) {
+	newNodeStatus := obj.(*corev1.Node)
+	if isNodeNotReadyForTooLong(newNodeStatus) {
 		c.lock.Lock()
 		defer c.lock.Unlock()
-		if _, ok := c.enqueueMap[newNode.Name]; !ok {
-			c.queue.Add(newNode)
-			c.enqueueMap[newNode.Name] = struct{}{} //mark that node can't be enqueue anymore before it can be processed
+		if _, ok := c.enqueueMap[newNodeStatus.Name]; !ok {
+			c.queue.Add(newNodeStatus)
+			c.enqueueMap[newNodeStatus.Name] = struct{}{} //mark that node can't be enqueue anymore before it can be processed
 		}
+	}
+	// if a node was in ready state, remove it in masked dict
+	logger := logger()
+	isNodeReady := c.checkNodeReadyStatusAfterRepairing(newNodeStatus)
+	_, ok := c.enqueueMap[newNodeStatus.Name]
+	if isNodeReady && ok {
+		logger.Info("repair node perform by auto repair controller was ran successfully")
+		delete(c.enqueueMap,newNodeStatus.Name)
 	}
 }
 //check if node is in not ready state for the limited time
@@ -261,7 +269,7 @@ func isNodeNotReadyForTooLong(node *corev1.Node) bool {
 func (c *controller) checkNodeReadyStatusAfterRepairing(node *corev1.Node) bool {
 	logger := logger()
 	logger.Info("Rebooted node in infrastructure, waiting for Ready state in kubernetes")
-	maxRetry := 10
+	maxRetry := 30
 	//retryCount := 0
 	for retryCount := 0; retryCount < maxRetry; retryCount++ {
 		newNodeState, _ := c.nodeLister.Get(node.Name)
